@@ -1,7 +1,6 @@
 module PrivateFields
 
 using MacroTools
-using Infiltrator
 
 macro private_struct(ex)
     private_fields, struct_ex = find_private_fields(ex)
