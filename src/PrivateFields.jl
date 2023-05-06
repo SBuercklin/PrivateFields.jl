@@ -4,7 +4,7 @@ using MacroTools
 using Infiltrator
 
 macro private_struct(ex)
-    private_fields, struct_ex = find_private_fields(ex) 
+    private_fields, struct_ex = find_private_fields(ex)
     struct_name, all_fields = get_struct_info(struct_ex)
 
     @show struct_name, all_fields, private_fields
@@ -32,10 +32,13 @@ end
 function get_struct_info(_ex)
     all_fields = Symbol[]
     sname, fields = MacroTools.postwalk(_ex) do ex
-        @capture(ex, (struct ((sname_{X__}) | (sname_)) fields__ end)) || return ex
+        @capture(ex, (struct ((sname_{X__}) | (sname_))
+            fields__
+        end)) || return ex
         return sname, fields
     end
-    return sname, map(fields) do ex
+    return sname,
+    map(fields) do ex
         ex isa Symbol ? ex : first(ex.args)
     end
 end
@@ -44,7 +47,11 @@ function build_getter(struct_name, all_fields, private_fields)
     public_fields = Tuple(setdiff(all_fields, private_fields))
     gtr = quote
         function Base.getproperty(s::$struct_name, f::Symbol)
-            return f in $public_fields ? Base.getfield(s,f) : error("Attempted to access private field")
+            return if f in $public_fields
+                Base.getfield(s, f)
+            else
+                error("Attempted to access private field")
+            end
         end
     end
 
