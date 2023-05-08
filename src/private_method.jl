@@ -52,7 +52,7 @@ end
 
 function find_private_args(argvec)
     results = map(argvec) do arg
-        @capture(arg, (x_::::Tpriv_) | (x_::Tnorm_))
+        @capture(arg, (x_::::Tpriv_) | (x_::Tnorm_)) || return (arg, arg, nothing)
         T = something(Tpriv, Tnorm)
         private_var = !isnothing(Tpriv) ? Tpriv : nothing
 
