@@ -2,14 +2,16 @@ using Test, PrivateFields
 const PF = PrivateFields
 
 @testset "Private Definitions" begin
-    @private_struct struct Foo{X,Y}
+    # Test with <: Any to verify subtyping workings
+    @private_struct struct Foo{X,Y} <: Any
         @private x::X
         y::Y
     end
 
     @test PF.private_fieldnames(Foo) == (:x,)
 
-    @private_struct struct Bar
+    # Test with <: Any to verify subtyping workings
+    @private_struct struct Bar <: Any
         x
         @private y
         z

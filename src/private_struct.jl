@@ -55,14 +55,9 @@ function find_private_fields(_ex)
     return Tuple(private_fields), out_ex
 end
 
-function get_struct_info(_ex)
-    sname = MacroTools.postwalk(_ex) do ex
-        @capture(ex, (struct ((sname_{X__}) | (sname_))
-            fields__
-        end)) || return ex
-        return sname
-    end
-    return sname
+function get_struct_info(ex)
+    sdef = MacroTools.splitstructdef(ex)
+    return sdef[:name]
 end
 
 function build_private_fields(struct_name, private_fields)
