@@ -1,5 +1,5 @@
 """
-    get_private_fields(::Type{T}) where {T}
+    private_fieldnames(::Type{T}) where {T}
 
 Returns the private fields of the type `T`, as denoted by [`@private_struct`](@ref).
 
