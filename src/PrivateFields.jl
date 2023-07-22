@@ -2,6 +2,7 @@ module PrivateFields
 
 using MacroTools
 
+include("./PrivacyAccessors.jl")
 include("./private_struct.jl")
 include("./private_method.jl")
 include("./functions.jl")
