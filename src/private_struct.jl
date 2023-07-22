@@ -34,9 +34,9 @@ macro private_struct(ex)
     struct_name = get_struct_info(struct_ex)
 
     private_flds = build_private_fields(struct_name, private_fields)
-    private_gp = build_private_getproperty(struct_name)
+    gp = build_getproperty(struct_name)
 
-    return esc(Expr(:block, struct_ex, private_flds, private_gp))
+    return esc(Expr(:block, struct_ex, private_flds, gp))
 end
 
 function find_private_fields(_ex)
@@ -70,10 +70,20 @@ function build_private_fields(struct_name, private_fields)
     return pfields
 end
 
-function build_private_getproperty(struct_name)
+function build_getproperty(struct_name)
     gp = quote
         function Base.getproperty(s::$struct_name, p::Symbol)
-            return PrivateFields.getproperty_check_privacy(s, p)
+            return Base.getproperty(s, p, PrivateFields.PublicAccess())
+        end
+        function Base.getproperty(s::$struct_name, p::Symbol, ::PrivateFields.PublicAccess)
+            if p in PrivateFields.private_fieldnames($struct_name)
+                throw(PrivateFields.PrivacyError(s, p))
+            else
+                return getfield(s, p)
+            end
+        end
+        function Base.getproperty(s::$struct_name, p::Symbol, ::PrivateFields.PrivateAccess)
+            return getfield(s, p)
         end
     end
 

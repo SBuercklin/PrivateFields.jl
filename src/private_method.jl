@@ -67,7 +67,7 @@ function make_private_calls(_ex, sym)
         @capture(ex, ($(sym).fld_)) || return ex
 
         q = Meta.quot(fld)
-        return :(PrivateFields.getproperty_direct($sym, $q))
+        return :(Base.getproperty($sym, $q, PrivateFields.PrivateAccess()))
     end
 
     return out_ex
